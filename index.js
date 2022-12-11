@@ -1,21 +1,21 @@
-//write here
-var bottoken = ''
-//token is sent when the schedule is retrieved
-
-//write each URLs got from  https://github.com/misenhower/splatoon3.ink/wiki/Data-Access
-var SchedulesURL = ""
-var SplatNetGearURL = ""
-//You must read the policies
-
-
 const Discord = require("discord.js");
 const request = require('request');
 const cron = require('node-cron');
 const moment = require('moment');
+const fs = require("fs");
+
+//write here
+var bottoken = ''
+var twitterID = ''
+
+//https://github.com/misenhower/splatoon3.ink/wiki/Data-Access
+//You must read the policies
+
 
 //datas
 var gesodata = ''
 var stagedata = ''
+var langdata = ""
 var formatdata = {
   "gearPower": {
       "Ink Saver (Main)": {
@@ -100,44 +100,6 @@ var formatdata = {
           "name": "不明"
       }
   },
-  "stages": {
-      "Scorch Gorge": {
-          "name": "ユノハナ大渓谷"
-      },
-      "Eeltail Alley": {
-          "name": "ゴンズイ地区"
-      },
-      "Hagglefish Market": {
-          "name": "ヤガラ市場"
-      },
-      "Undertow Spillway": {
-          "name": "マテガイ放水路"
-      },
-      "Mincemeat Metalworks": {
-          "name": "ナメロウ金属"
-      },
-      "Mahi-Mahi Resort": {
-          "name": "マヒマヒリゾート&スパ"
-      },
-      "Museum d'Alfonsino": {
-          "name": " キンメダイ美術館"
-      },
-      "Hammerhead Bridge": {
-          "name": "マサバ海峡大橋"
-      },
-      "Wahoo World": {
-          "name": "スメーシーワールド"
-      },
-      "MakoMart": {
-          "name": "ザトウマーケット"
-      },
-      "Inkblot Art Academy": {
-          "name": "海女美術大学"
-      },
-      "Sturgeon Shipyard": {
-          "name": "チョウザメ造船"
-      }
-  },
   "brands": {
       "Zink": {
           "name": "アイロニック","Favored_Ability":"スーパージャンプ時間短縮"
@@ -194,251 +156,64 @@ var formatdata = {
         "name": "タタキケンサキ","Favored_Ability":"インク効率アップ(メイン)"
     }
   },
-  "coopStages": {
-      "Spawning Grounds": {
-          "name": "シェケナダム"
-      },
-      "Sockeye Station": {
-          "name": "アラマキ砦"
-      },
-      "Gone Fission Hydroplant": {
-          "name": "ムニ・エール海洋発電所"
-      }
-  },
-  "weapons": {
-      "Random":{
-          "name":"ランダム武器"
-      },
-      "Blaster": {
-          "name": "ホットブラスター"
-      },
-      "Clash Blaster": {
-          "name": "クラッシュブラスター"
-      },
-      "Luna Blaster": {
-          "name": "ノヴァブラスター"
-      },
-      "Range Blaster": {
-          "name": "ロングブラスター"
-      },
-      "Rapid Blaster Pro": {
-          "name": "Rブラスターエリート"
-      },
-      "Rapid Blaster": {
-          "name": "ラピッドブラスター"
-      },
-      "Splat Brella": {
-          "name": "パラシェルター"
-      },
-      "Tenta Brella": {
-          "name": "キャンピングシェルター"
-      },
-      "Undercover Brella": {
-          "name": "スパイガジェット"
-      },
-      "Inkbrush": {
-          "name": "パブロ"
-      },
-      "Octobrush": {
-          "name": "ホクサイ"
-      },
-      "Bamboozler 14 Mk I": {
-          "name": "14式竹筒銃・甲"
-      },
-      "Classic Squiffer": {
-          "name": "スクイックリンα"
-      },
-      "E-liter 4K": {
-          "name": "リッター4K"
-      },
-      "E-liter 4K Scope": {
-          "name": "4Kスコープ"
-      },
-      "Goo Tuber": {
-          "name": "ソイチューバー"
-      },
-      "Splat Charger": {
-          "name": "スプラチャージャー"
-      },
-      "Spatterscope": {
-          "name": "スプラスコープ"
-      },
-      "Dapple Dualies": {
-          "name": "スパッタリー"
-      },
-      "Dualie Squelchers": {
-          "name": "デュアルスイーパー"
-      },
-      "Glooga Dualies": {
-          "name": "ケルビン525"
-      },
-      "Splat Dualies": {
-          "name": "スプラマニューバー"
-      },
-      "Dark Tetra Dualies": {
-          "name": "クアッドホッパーブラック"
-      },
-      "Carbon Roller": {
-          "name": "カーボンローラー"
-      },
-      "Dynamo Roller": {
-          "name": "ダイナモローラー"
-      },
-      "Flingza Roller": {
-          "name": "ヴァリアブルローラー"
-      },
-      "Splat Roller": {
-          "name": "スプラローラー"
-      },
-      ".52 Gal": {
-          "name": ".52ガロン"
-      },
-      ".96 Gal": {
-          "name": ".96ガロン"
-      },
-      "Aerospray MG": {
-          "name": "プロモデラーMG"
-      },
-      "H-3 Nozzlenose": {
-          "name": "H3 リールガン"
-      },
-      "L-3 Nozzlenose": {
-          "name": "L3リールガン"
-      },
-      "Jet Squelcher": {
-          "name": "ジェットスイーパー"
-      },
-      "N-ZAP '85": {
-          "name": "N-ZAP85"
-      },
-      "Squeezer": {
-          "name": "ボトルカイザー"
-      },
-      "Splash-o-matic": {
-          "name": "シャープマーカー"
-      },
-      "Splattershot": {
-          "name": "スプラシューター"
-      },
-      "Splattershot Jr.": {
-          "name": "わかばシューター"
-      },
-      "Splattershot Pro": {
-          "name": "プライムシューター"
-      },
-      "Sploosh-o-matic": {
-          "name": "ボールドマーカー"
-      },
-      "Bloblobber": {
-          "name": "オーバーフロッシャー"
-      },
-      "Explosher": {
-          "name": "エクスプロッシャー"
-      },
-      "Slosher": {
-          "name": "バケットスロッシャー"
-      },
-      "Tri-Slosher": {
-          "name": "ヒッセン"
-      },
-      "Sloshing Machine": {
-          "name": "スクリュースロッシャー"
-      },
-      "Splatana Stamper": {
-          "name": "ジムワイパー"
-      },
-      "Splatana Wiper": {
-          "name": "ドライブワイパー"
-      },
-      "Ballpoint Splatling": {
-          "name": "クーゲルシュライバー"
-      },
-      "Heavy Splatling": {
-          "name": "バレルスピナー"
-      },
-      "Hydra Splatling": {
-          "name": "ハイドラント"
-      },
-      "Mini Splatling": {
-          "name": "スプラスピナー"
-      },
-      "Nautilus 47": {
-          "name": "ノーチラス47"
-      },
-      "REEF-LUX 450": {
-          "name": "LACT-450"
-      },
-      "Tri-Stringer": {
-          "name": "トライストリンガー"
-      }
-  },
-  "rules": {
-      "Tower Control": {
-          "name": "ガチヤグラ"
-      },
-      "Splat Zones": {
-          "name": "ガチエリア"
-      },
-      "Rainmaker": {
-          "name": "ガチホコバトル"
-      },
-      "Clam Blitz": {
-          "name": "ガチアサリ"
-      }
-  },
   "GearTypes":{
-      "HeadGear":{
-          "name":"アタマ"
-      },
-      "ClothingGear":{
-          "name":"フク"
-      },
-      "ShoesGear":{
-          "name":"クツ"
-      }
+    "HeadGear":{
+        "name":"アタマ"
+    },
+    "ClothingGear":{
+        "name":"フク"
+    },
+    "ShoesGear":{
+        "name":"クツ"
+    }
   }
 }
+
+//slash commands
+const interactiondata = [
+  {name: "geso",description: "ゲソタウンのギアをすべて取得。"},
+  {name: "help",description:"ヘルプコマンド"},
+  {name: "update",description:"コマンド追加用"},
+  {name: "xmatch",description: "Xマッチのステージを取得します。" },
+  {name: "turf",description: "ナワバリのステージを取得します。"},
+  {name: "series",description: "チャレンジのステージを取得します。"},
+  {name: "open",description: "オープンのステージを取得します。"},
+  {name: "coop",description: "サーモンランの情報を取得します。"},
+];
+
 //get gears
 cron.schedule('0 0 1,5,9,13,17,21 * * *', () => {
-  var options = {
-    url:SplatNetGearURL,
-    headers: {
-        'User-Agent': 'Discordbot-bottoken-'+bottoken
+    //ゲソタウンデータ取得
+    var options1 = {
+      url: 'https://splatoon3.ink/data/gear.json',
+      headers: {
+        'User-Agent': 'Discordbot-Twitter-'+twitterID,
+      }
+    };
+    function gets1(error1, response1, body1) {
+      if (!error1 && response1.statusCode == 200) {
+        gesodata = JSON.parse(body1);
+        console.log(`{${d}日${h}時${m}分${s}秒} ゲソタウンリクエスト送信`)
+      }
     }
-  };
-  function callback(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      gesodata = JSON.parse(body);
-      var now = new Date();
-      var d = now.getDate()
-      var h = now.getHours()
-      var m = now.getMinutes()
-      var s = now.getSeconds()
-      console.log(`{${d}日${h}時${m}分${s}秒} [\x1b[32mリクエスト送信\x1b[0m]`)
-    }
-  }
-  request.get(options, callback);
+    request.get(options1, gets1);  
 });
 //get schedule
 cron.schedule('0 0 1,3,5,7,9,11,13,15,17,19,21,23 * * *', () => {
-  var options = {
-    url: SchedulesURL,
+  //ステージ取得
+  var options2 = {
+    url: 'https://splatoon3.ink/data/schedules.json',
     headers: {
-      'User-Agent': 'Discordbot-bottoken-'+bottoken
+      'User-Agent': 'Discordbot-Twitter-'+twitterID
     }
   };
-  function gets(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      stagedata = JSON.parse(body);
-      var now = new Date();
-      var d = now.getDate()
-      var h = now.getHours()
-      var m = now.getMinutes()
-      var s = now.getSeconds()
-      console.log(`{${d}日${h}時${m}分${s}秒} [\x1b[32mステージリクエスト送信\x1b[0m]`)
+  function gets2(error2, response2, body2) {
+    if (!error2 && response2.statusCode == 200) {
+      stagedata = JSON.parse(body2);
+      console.log(`{${d}日${h}時${m}分${s}秒} ステージリクエスト送信`)
     }
   }
-  request.get(options, gets);
+  request.get(options2, gets2);
 });
 //get time
 function nowtime(){
@@ -449,56 +224,59 @@ function nowtime(){
   s = now.getSeconds()
 }
 
-//slash commands
-const interactiondata = [
-    {name: "geso",description: "ゲソタウンのギアをすべて取得。"},
-    {name: "help",description:"ヘルプコマンド"},
-    {name: "update",description:"コマンド追加用"},
-    {name: "turf",description: "ナワバリのステージを取得します。",options: [{type: "INTEGER",name: "int",description: "何個先のスケジュールまで表示するか書いてください。(デフォルト2最大5)",required: false}]   },
-    {name: "series",description: "チャレンジのステージを取得します。",options: [{type: "INTEGER",name: "int",description: "何個先のスケジュールまで表示するか書いてください。(デフォルト2最大5)",required: false}]   },
-    {name: "open",description: "オープンのステージを取得します。",options: [{type: "INTEGER",name: "int",description: "何個先のスケジュールまで表示するか書いてください。(デフォルト2最大5)",required: false}]   },
-    {name: "coop",description: "サーモンランの情報を取得します。",options: [{type: "INTEGER",name: "int",description: "何個先のスケジュールまで表示するか書いてください。(デフォルト2最大5)",required: false}]   },
-];
 
 const sclient= new Discord.Client({
   intents: Object.keys(Discord.Intents.FLAGS)
 });
-sclient.on('ready', () => {
+sclient.on('ready', async () => {
   nowtime()
   console.log(`{${d}日${h}時${m}分${s}秒} [\x1b[35mパッケージバージョン:${Discord.version}\x1b[0m] スプラ3BOT起動完了`);
   sclient.user.setActivity(sclient.guilds.cache.size + 'サーバーに参加中｜s3.help', {
     type: 'PLAYING'
-  });
+  })
+
   //ゲソタウンデータ取得
-  var options = {
-    url: SplatNetGearURL,
+  var options1 = {
+    url: 'https://splatoon3.ink/data/gear.json',
     headers: {
-        'User-Agent': 'Discordbot-bottoken-'+bottoken
+      'User-Agent': 'Discordbot-Twitter-'+twitterID,
     }
   };
-  function callback(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      gesodata = JSON.parse(body);
-      nowtime()
-      console.log(`{${d}日${h}時${m}分${s}秒} リクエスト送信`)
+  function gets1(error1, response1, body1) {
+    if (!error1 && response1.statusCode == 200) {
+      gesodata = JSON.parse(body1);
+      console.log(`{${d}日${h}時${m}分${s}秒} ゲソタウンリクエスト送信`)
     }
   }
-  request.get(options, callback);  
+  request.get(options1, gets1);  
   //ステージ取得
-  var options = {
-    url: SchedulesURL,
+  var options2 = {
+    url: 'https://splatoon3.ink/data/schedules.json',
     headers: {
-    'User-Agent': 'Discordbot-bottoken-'+bottoken
+      'User-Agent': 'Discordbot-Twitter-'+twitterID
     }
   };
-  function gets(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      stagedata = JSON.parse(body);
-      nowtime()
+  function gets2(error2, response2, body2) {
+    if (!error2 && response2.statusCode == 200) {
+      stagedata = JSON.parse(body2);
       console.log(`{${d}日${h}時${m}分${s}秒} ステージリクエスト送信`)
     }
   }
-  request.get(options, gets);
+  request.get(options2, gets2);
+  //言語設定取得
+  var options3 = {
+    url: 'https://splatoon3.ink/data/locale/ja-JP.json',
+    headers: {
+      'User-Agent': 'Discordbot-Twitter-'+twitterID
+    }
+  };
+  function gets3(error3, response3, body3) {
+    if (!error3 && response3.statusCode == 200) {
+      langdata = JSON.parse(body3);
+      console.log(`{${d}日${h}時${m}分${s}秒} 言語設定リクエスト送信`)
+    }
+  }
+  request.get(options3, gets3);
 });
 sclient.on("messageCreate", async message => {
   if (message.author.bot) return;
@@ -515,6 +293,9 @@ sclient.on("messageCreate", async message => {
       .setDescription('```s3.slash => スラッシュコマンドをサーバーに追加します。\nスラッシュコマンドについては/helpより確認いただけます。```')
       .setColor('7b68ee')
       message.reply({embeds: [emb], ephemeral: true })
+      console.log(gesodata)
+      console.log(stagedata)
+      console.log(langdata)
   }
   if(message.content == 's3.slash'){
     await sclient.application.commands.set(interactiondata, message.guild.id);
@@ -681,25 +462,20 @@ sclient.on("interactionCreate", async (interaction) => {
       interaction.reply({embeds: [emb], ephemeral: true })
   }
   if (interaction.commandName === 'update'){
-    await sclient.application.commands.set(interactiondata, interaction.guild.id);
+    sclient.application.commands.set(interactiondata, interaction.guild.id);
+    interaction.reply({content : '追加完了', ephemeral: true })
   }
   if(interaction.commandName === 'turf'){
     var turfSC = stagedata.data.regularSchedules
     var festSC = stagedata.data.festSchedules
     var turfembed = []
-    var limit = 2
-    //int確認
-    if(interaction.options.getInteger('int') < 1||interaction.options.getInteger('int') > 5){
-      if(interaction.options.getInteger('int') < 1)limit = 1;
-      if(interaction.options.getInteger('int') > 5)limit = 5;
-    }else{
-      limit = interaction.options.getInteger('int')
-    }
+    var limit = 5
+
     var festcount = 0
     for (let i = 0; i < limit ; i++) {
       if(turfSC.nodes[i].festMatchSetting == null){
-        var Stage1JP = formatdata.stages[turfSC.nodes[i].regularMatchSetting.vsStages[0].name].name
-        var Stage2JP = formatdata.stages[turfSC.nodes[i].regularMatchSetting.vsStages[1].name].name
+        var Stage1JP = langdata.stages[turfSC.nodes[i].regularMatchSetting.vsStages[0].id].name
+        var Stage2JP = langdata.stages[turfSC.nodes[i].regularMatchSetting.vsStages[1].id].name
         turfembed.push(new Discord.MessageEmbed()
         .setURL('https://discord.com/channels/588336492049465364/588343228063940619/1038374680240861234%index='+String(i))
         .setColor(0xff0099)
@@ -748,19 +524,13 @@ sclient.on("interactionCreate", async (interaction) => {
   if(interaction.commandName === 'series'){
     var bankarasc =  stagedata.data.bankaraSchedules
     var cembed = []
-    var limitc = 2
-    //int確認
-    if(interaction.options.getInteger('int') < 1||interaction.options.getInteger('int') > 5){
-      if(interaction.options.getInteger('int') < 1)limit = 1;
-      if(interaction.options.getInteger('int') > 5)limit = 5;
-    }else{
-      limitc = interaction.options.getInteger('int')
-    }
+    var limitc = 5
+
     for (let i = 0; i < limitc ; i++) {
       if(bankarasc.nodes[i].bankaraMatchSettings !== null){
-      var rule = formatdata.rules[bankarasc.nodes[i].bankaraMatchSettings[0].vsRule.name].name
-      var Stage1JP = formatdata.stages[bankarasc.nodes[i].bankaraMatchSettings[0].vsStages[0].name].name
-      var Stage2JP = formatdata.stages[bankarasc.nodes[i].bankaraMatchSettings[0].vsStages[1].name].name
+      var rule = langdata.rules[bankarasc.nodes[i].bankaraMatchSettings[0].vsRule.id].name
+      var Stage1JP = langdata.stages[bankarasc.nodes[i].bankaraMatchSettings[0].vsStages[0].id].name
+      var Stage2JP = langdata.stages[bankarasc.nodes[i].bankaraMatchSettings[0].vsStages[1].id].name
       if(bankarasc.nodes[i].festMatchSetting == null){
         cembed.push(new Discord.MessageEmbed()
         .setURL('https://discord.com/channels/588336492049465364/588343228063940619/1038374680240861234%index='+String(i))
@@ -791,20 +561,13 @@ sclient.on("interactionCreate", async (interaction) => {
   if(interaction.commandName === 'open'){
     var bankarasc =  stagedata.data.bankaraSchedules
     var oembed = []
-    var limito = 2
-    //int確認
-    if(interaction.options.getInteger('int') < 1||interaction.options.getInteger('int') > 5){
-      if(interaction.options.getInteger('int') < 1)limit = 1;
-      if(interaction.options.getInteger('int') > 5)limit = 5;
-    }else{
-      limito = interaction.options.getInteger('int')
-    }
+    var limito = 5
     
     for (let i = 0; i < limito ; i++) {
       if(bankarasc.nodes[i].bankaraMatchSettings !== null){
-          var rule = formatdata.rules[bankarasc.nodes[i].bankaraMatchSettings[1].vsRule.name].name
-          var Stage1JP = formatdata.stages[bankarasc.nodes[i].bankaraMatchSettings[1].vsStages[0].name].name
-          var Stage2JP = formatdata.stages[bankarasc.nodes[i].bankaraMatchSettings[1].vsStages[1].name].name
+          var rule = langdata.rules[bankarasc.nodes[i].bankaraMatchSettings[1].vsRule.id].name
+          var Stage1JP = langdata.stages[bankarasc.nodes[i].bankaraMatchSettings[1].vsStages[0].id].name
+          var Stage2JP = langdata.stages[bankarasc.nodes[i].bankaraMatchSettings[1].vsStages[1].id].name
           if(bankarasc.nodes[i].festMatchSetting == null){
             oembed.push(new Discord.MessageEmbed()
             .setURL('https://discord.com/channels/588336492049465364/588343228063940619/1038374680240861234%index='+String(i))
@@ -833,36 +596,108 @@ sclient.on("interactionCreate", async (interaction) => {
     }
     interaction.reply({embeds: oembed, ephemeral: true })
   }
+  if(interaction.commandName === 'xmatch'){
+    var Xsc =  stagedata.data.xSchedules
+    var Xembed = []
+    var limitX = 5
+    
+    for (let i = 0; i < limitX ; i++) {
+      if(Xsc.nodes[i].xMatchSetting !== null){
+          var rule = langdata.rules[Xsc.nodes[i].xMatchSetting.vsRule.id].name
+          var Stage1JP = langdata.stages[Xsc.nodes[i].xMatchSetting.vsStages[0].id].name
+          var Stage2JP = langdata.stages[Xsc.nodes[i].xMatchSetting.vsStages[1].id].name
+          if(Xsc.nodes[i].festMatchSetting == null){
+            Xembed.push(new Discord.MessageEmbed()
+            .setURL('https://discord.com/channels/588336492049465364/588343228063940619/1038374680240861234%index='+String(i))
+            .setColor(0xff0099)
+            .setTitle(`Xマッチ---${rule}`)
+            .setAuthor({ name: 'Splatoon3.inkにより出力', iconURL: 'https://splatoon3.ink/assets/little-buddy.445c3c88.png', url: 'https://github.com/misenhower/splatoon3.ink' })
+            .addFields({ name: '開催時間', value: `${moment(Xsc.nodes[i].startTime).date()}日${moment(Xsc.nodes[i].startTime).hours()}:00～${moment(Xsc.nodes[i].endTime).date()}日${moment(Xsc.nodes[i].endTime).hours()}:00`},
+            { name: 'ステージ1', value: Stage1JP, inline: true },
+            { name: 'ステージ2', value: Stage2JP, inline: true }
+          )
+          .setImage(Xsc.nodes[i].xMatchSetting.vsStages[0].image.url)
+          )
+          Xembed.push(new Discord.MessageEmbed()
+          .setURL('https://discord.com/channels/588336492049465364/588343228063940619/1038374680240861234%index='+String(i))
+          .setImage(Xsc.nodes[i].xMatchSetting.vsStages[1].image.url))
+          }
+
+      }
+    }
+    //フェスなどで取得できないとき
+    if(Xembed.length == 0){
+      Xembed.push(new Discord.MessageEmbed()
+      .setColor(0xff0099)
+      .setTitle('現在フェスのためXマッチは行われていません。')
+      )
+    }
+    interaction.reply({embeds: Xembed, ephemeral: true })
+  }
   if(interaction.commandName === 'coop'){
     var coopsc =  stagedata.data.coopGroupingSchedule.regularSchedules
     var coopembeds = []
-    var limitco = 2
-    //int確認
-    if(interaction.options.getInteger('int') < 1||interaction.options.getInteger('int') > 5){
-      if(interaction.options.getInteger('int') < 1)limit = 1;
-      if(interaction.options.getInteger('int') > 5)limit = 5;
-    }else{
-      limitco = interaction.options.getInteger('int')
-    }
+    var limitco = 5
+    //bigrun
+    var bigrunsc =  stagedata.data.coopGroupingSchedule.bigRunSchedules
+    var BGi = 0
+
     for (let i = 0; i < limitco ; i++) {
-      var weapon1 = formatdata.weapons[coopsc.nodes[i].setting.weapons[0].name].name
-      var weapon2 = formatdata.weapons[coopsc.nodes[i].setting.weapons[1].name].name
-      var weapon3 = formatdata.weapons[coopsc.nodes[i].setting.weapons[2].name].name
-      var weapon4 = formatdata.weapons[coopsc.nodes[i].setting.weapons[3].name].name
-      var stage = formatdata.coopStages[coopsc.nodes[i].setting.coopStage.name].name
-      coopembeds.push(new Discord.MessageEmbed()
-      .setColor(0xff0099)
+      function bigrun(){
+        var weapon1 = langdata.weapons[bigrunsc.nodes[BGi].setting.weapons[0].__splatoon3ink_id].name
+        var weapon2 = langdata.weapons[bigrunsc.nodes[BGi].setting.weapons[1].__splatoon3ink_id].name
+        var weapon3 = langdata.weapons[bigrunsc.nodes[BGi].setting.weapons[2].__splatoon3ink_id].name
+        var weapon4 = langdata.weapons[bigrunsc.nodes[BGi].setting.weapons[3].__splatoon3ink_id].name
+        var stage = langdata.stages[bigrunsc.nodes[BGi].setting.coopStage.id].name
+        coopembeds.push(new Discord.MessageEmbed()
+      .setColor(0xff0000)
       .setTitle(`${stage}`)
       .setAuthor({ name: 'Splatoon3.inkにより出力', iconURL: 'https://splatoon3.ink/assets/little-buddy.445c3c88.png', url: 'https://github.com/misenhower/splatoon3.ink' })
-      .addFields({ name: '開催時間', value: `${moment(coopsc.nodes[i].startTime).date()}日${moment(coopsc.nodes[i].startTime).hours()}:00～${moment(coopsc.nodes[i].endTime).date()}日${moment(coopsc.nodes[i].endTime).hours()}:00`},
+      .addFields({ name: '開催時間', value: `${moment(bigrunsc.nodes[BGi].startTime).date()}日${moment(bigrunsc.nodes[BGi].startTime).hours()}:00～${moment(bigrunsc.nodes[BGi].endTime).date()}日${moment(bigrunsc.nodes[BGi].endTime).hours()}:00`},
       { name: '武器1', value: weapon1, inline: true},
       { name: '武器2', value: weapon2, inline: true},
       { name: '\u200B', value: '\u200B'},
       { name: '武器3', value: weapon3, inline: true},
       { name: '武器4', value: weapon4, inline: true}
       )
-      .setImage(coopsc.nodes[i].setting.coopStage.image.url)
-    )
+      .setImage(bigrunsc.nodes[BGi].setting.coopStage.image.url)
+      )
+      }
+      function normal(){
+        var weapon1 = langdata.weapons[coopsc.nodes[i].setting.weapons[0].__splatoon3ink_id].name
+        var weapon2 = langdata.weapons[coopsc.nodes[i].setting.weapons[1].__splatoon3ink_id].name
+        var weapon3 = langdata.weapons[coopsc.nodes[i].setting.weapons[2].__splatoon3ink_id].name
+        var weapon4 = langdata.weapons[coopsc.nodes[i].setting.weapons[3].__splatoon3ink_id].name
+        var stage = langdata.stages[coopsc.nodes[i].setting.coopStage.id].name
+        coopembeds.push(new Discord.MessageEmbed()
+        .setColor(0xff0099)
+        .setTitle(`${stage}`)
+        .setAuthor({ name: 'Splatoon3.inkにより出力', iconURL: 'https://splatoon3.ink/assets/little-buddy.445c3c88.png', url: 'https://github.com/misenhower/splatoon3.ink' })
+        .addFields({ name: '開催時間', value: `${moment(coopsc.nodes[i].startTime).date()}日${moment(coopsc.nodes[i].startTime).hours()}:00～${moment(coopsc.nodes[i].endTime).date()}日${moment(coopsc.nodes[i].endTime).hours()}:00`},
+        { name: '武器1', value: weapon1, inline: true},
+        { name: '武器2', value: weapon2, inline: true},
+        { name: '\u200B', value: '\u200B'},
+        { name: '武器3', value: weapon3, inline: true},
+        { name: '武器4', value: weapon4, inline: true}
+        )
+        .setImage(coopsc.nodes[i].setting.coopStage.image.url)
+      )
+  
+  
+      }
+      if((coopsc.nodes[i+1].startTime !== coopsc.nodes[i].endTime)){
+        normal()
+        bigrun()
+        limitco--
+      }else{
+        if((moment(coopsc.nodes[i].startTime) > moment()&&i == 0)){
+          bigrun()
+          normal()
+          limitco--
+        }else{
+          normal()
+        }
+      }
     }
     interaction.reply({embeds: coopembeds, ephemeral: true })
   }
