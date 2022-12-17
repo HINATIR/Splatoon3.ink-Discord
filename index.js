@@ -493,8 +493,8 @@ sclient.on("interactionCreate", async (interaction) => {
         .setImage(turfSC.nodes[i].regularMatchSetting.vsStages[1].image.url))
       }else{
         festcount++
-          var Stage1JP = formatdata.stages[festSC.nodes[festcount - 1].festMatchSetting.vsStages[0].name].name
-          var Stage2JP = formatdata.stages[festSC.nodes[festcount - 1].festMatchSetting.vsStages[1].name].name
+          var Stage1JP = langdata.stages[festSC.nodes[festcount - 1].festMatchSetting.vsStages[0].id].name
+          var Stage2JP = langdata.stages[festSC.nodes[festcount - 1].festMatchSetting.vsStages[1].id].name
           turfembed.push(new Discord.MessageEmbed()
           .setURL('https://discord.com/channels/588336492049465364/588343228063940619/1038374680240861234%index='+String(festcount))
           .setColor(0xff0099)
@@ -637,7 +637,7 @@ sclient.on("interactionCreate", async (interaction) => {
   if(interaction.commandName === 'coop'){
     var coopsc =  stagedata.data.coopGroupingSchedule.regularSchedules
     var coopembeds = []
-    var limitco = 5
+    var limitco = 4
     //bigrun
     var bigrunsc =  stagedata.data.coopGroupingSchedule.bigRunSchedules
     var BGi = 0
